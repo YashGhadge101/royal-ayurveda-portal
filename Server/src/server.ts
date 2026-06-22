@@ -18,7 +18,7 @@ app.use("/api/products", productRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/upload", uploadRoutes);
 app.use("/uploads", express.static("uploads", {
-    setHeaders: (res, path) => {
+    setHeaders: (res: { set: (arg0: string, arg1: string) => void; }, path: any) => {
         res.set("Access-Control-Allow-Origin", "*");
         res.set("Cross-Origin-Resource-Policy", "cross-origin");
     }
@@ -28,8 +28,9 @@ app.use("/api/categories", categoryRoutes);
 app.use("/api/customers", customerRoutes);
 app.use("/api/wishlist", wishlistRoutes);
 app.use("/api/favorites", favoriteRoutes);
+app.use(cors({ origin: 'https://your-live-vercel-url.vercel.app' }));
 
-app.get("/", (_req, res) => {
+app.get("/", (_req: any, res: { send: (arg0: string) => void; }) => {
   res.send("Backend Running");
 });
 
