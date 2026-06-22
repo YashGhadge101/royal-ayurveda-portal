@@ -1,9 +1,10 @@
 import type { Product } from "../types/Product";
 
+// Accessing the VITE_API_URL safely
+const API_URL = import.meta.env.VITE_API_URL;
+
 export const getProducts = async (): Promise<Product[]> => {
-  const response = await fetch(
-    "http://localhost:5000/api/products"
-  );
+  const response = await fetch(`${API_URL}/api/products`);
 
   if (!response.ok) {
     throw new Error("Failed to fetch products");
@@ -12,24 +13,19 @@ export const getProducts = async (): Promise<Product[]> => {
   return response.json();
 };
 
-export const addProduct = async (
-  product: {
-    name: string;
-    category: string;
-    image: string;
-    description: string;
-  }
-) => {
-  const response = await fetch(
-    "http://localhost:5000/api/products",
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(product),
-    }
-  );
+export const addProduct = async (product: {
+  name: string;
+  category: string;
+  image: string;
+  description: string;
+}) => {
+  const response = await fetch(`${API_URL}/api/products`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(product),
+  });
 
   if (!response.ok) {
     throw new Error("Failed to add product");
@@ -38,12 +34,8 @@ export const addProduct = async (
   return response.json();
 };
 
-export const getProductById = async (
-  id: string
-): Promise<Product> => {
-  const response = await fetch(
-    `http://localhost:5000/api/products/${id}`
-  );
+export const getProductById = async (id: string): Promise<Product> => {
+  const response = await fetch(`${API_URL}/api/products/${id}`);
 
   if (!response.ok) {
     throw new Error("Product not found");
@@ -52,15 +44,10 @@ export const getProductById = async (
   return response.json();
 };
 
-export const deleteProduct = async (
-  id: number
-) => {
-  const response = await fetch(
-    `http://localhost:5000/api/products/${id}`,
-    {
-      method: "DELETE",
-    }
-  );
+export const deleteProduct = async (id: number) => {
+  const response = await fetch(`${API_URL}/api/products/${id}`, {
+    method: "DELETE",
+  });
 
   if (!response.ok) {
     throw new Error("Failed to delete product");
@@ -78,16 +65,13 @@ export const updateProduct = async (
     description: string;
   }
 ) => {
-  const response = await fetch(
-    `http://localhost:5000/api/products/${id}`,
-    {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(product),
-    }
-  );
+  const response = await fetch(`${API_URL}/api/products/${id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(product),
+  });
 
   if (!response.ok) {
     throw new Error("Failed to update product");
@@ -96,25 +80,26 @@ export const updateProduct = async (
   return response.json();
 };
 
-// Add this to your service file
 export const updateFavoriteStatus = async (productId: number, isFavorite: boolean) => {
-    const response = await fetch(`http://localhost:5000/api/favorites`, {
-        method: "POST", // or PATCH
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ productId, isFavorite }),
-    });
-    return response.json();
+  const token = localStorage.getItem("token");
+  const response = await fetch(`${API_URL}/api/favorites`, {
+    method: "POST",
+    headers: { 
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}` 
+    },
+    body: JSON.stringify({ productId, isFavorite }),
+  });
+  return response.json();
 };
 
-// Look at your service file - it should look like this:
 export const getFavoriteStatus = async (productId: number) => {
-    // You MUST include the token/user info here
-    const token = localStorage.getItem("token"); // or wherever you store your auth
-    
-    const response = await fetch(`http://localhost:5000/api/favorites/${productId}`, {
-        headers: {
-            "Authorization": `Bearer ${token}` // THE SERVER NEEDS THIS TO FIND YOUR RECORD
-        }
-    });
-    return response.json();
+  const token = localStorage.getItem("token");
+  
+  const response = await fetch(`${API_URL}/api/favorites/${productId}`, {
+    headers: {
+      "Authorization": `Bearer ${token}`
+    }
+  });
+  return response.json();
 };
